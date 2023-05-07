@@ -78,7 +78,7 @@ def record_sales(update, context):
     # /recordsales sales_item--sales_quantity--sales_revenu--sales_date(dd/mm/yyyy)
     # /recordsales chocolate_mocha--50--2000--07/05/2023
     # sales info
-    sales_=sales_raw.split("--")
+    sales_=sales_raw.split(",")
     sales_item = sales_[0]
     sales_quantity = sales_[1]
     sales_revenu = sales_[2]
