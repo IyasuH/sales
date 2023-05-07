@@ -82,7 +82,7 @@ def record_sales(update, context):
     sales_item = sales_[0]
     sales_quantity = sales_[1]
     sales_revenu = sales_[2]
-    sales_date = sales_raw[3]
+    sales_date = sales_[3]
 
     # admin info
     adminUserName = getattr(admin, "username", '')
