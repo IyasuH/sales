@@ -182,7 +182,7 @@ def sales_date(update, context):
         update.message.reply_text(text="What do you mean, I don't get it")
         return
     # the date format should be 07/05/2023
-    date = str(context.args[0])
+    date = str(context.args[0:]).replace("['", '').replace("']",'')
     sales = sales_db.fetch({"date":date}).items
     if sales == []:
         update.message.reply_text("No sales at that day")
@@ -196,7 +196,7 @@ def expense_date(update, context):
         update.message.reply_text(text="What do you mean, I don't get it")
         return
     # the date format should be 07/05/2023
-    date = str(context.args[0])
+    date = str(context.args[0:]).replace("['", '').replace("']",'')
     expenses = expense_db.fetch({"date":date}).items
     for expense in  expenses:
         update.messgae.reply_text("Expenses: \n\tName: "+expense["exp_name"]+"\n\tQunatity: "+str(expense["quantity"])+"\n\tAmount: "+str(expense["amount"])+"\n\tDate: "+expense["date"]+"\n\tRecorder by: "+expense["admin_first_N"]+"\n\tRecorded At: "+expense["admin_record_at"])
