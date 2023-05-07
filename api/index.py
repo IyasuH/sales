@@ -138,14 +138,14 @@ def record_expense(update, context):
     expense_db.put(expense_dict)
     update.message.reply_html("<b>expense</b> info recorded successfully")
 
-today = datetime.datetime.now().strftime("%d/%m/%y, %H:%M")
+today = datetime.datetime.now().strftime("%d/%m/%y")
 
 def todays_sales(update, context):
     effective_user = update.effective_user
     if effective_user.id not in ADMIN_IDs:
         update.message.reply_text(text="What do you mean, I don't get it")
         return
-    sales = sales_db.fetch({"date":today}).items
+    sales = sales_db.fetch({"date": today}).items
     if sales == None:
         update.message.reply_text("No Sales 😞 Today")
     for sale in sales:
