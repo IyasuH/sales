@@ -79,10 +79,10 @@ def record_sales(update, context):
     # /recordsales chocolate_mocha--50--2000--07/05/2023
     # sales info
     sales_=sales_raw.split(",")
-    sales_item = sales_[0]
-    sales_quantity = sales_[1]
-    sales_revenu = sales_[2]
-    sales_date = sales_[3]
+    sales_item = sales_[0].replace("[", '').replace("'", '')
+    sales_quantity = sales_[1].replace("'", '')
+    sales_revenu = sales_[2].replace("'", '')
+    sales_date = sales_[3].replace("]", '').replace("'", '')
 
     # admin info
     adminUserName = getattr(admin, "username", '')
