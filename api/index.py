@@ -138,7 +138,7 @@ def record_expense(update, context):
     expense_db.put(expense_dict)
     update.message.reply_html("<b>expense</b> info recorded successfully")
 
-today = datetime.datetime.now().strftime("%d/%m/%y")
+today = datetime.datetime.now().strftime(" %d/%m/%Y")
 
 def todays_sales(update, context):
     effective_user = update.effective_user
