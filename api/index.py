@@ -122,10 +122,14 @@ TEST VERSION
 <b>To record todays sales</b>
 Use /recTodaySale followed by todays sales info - to record todays sales info
 
+The format /recTodaySale sales_item sales_quantity sales_revenu
+
 e.g /recTodaySale chocolate_mocha 50 2000
 
 <b>To record todays expesne</b>
 Use /recTodaysExp followed by todays expense info - to record todays expense info
+
+The format /recTodaysExp expnse_name qunatity amount
 
 e.g /recTodaysExp chocolate_sirup(250ml) 1 2500
 
