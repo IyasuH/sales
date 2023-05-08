@@ -429,7 +429,16 @@ def request_permision(update, context):
     startUser_dict["key"] = str(user.id)
 
     permission_request_db.put(startUser_dict)
-    update.message.reply_html("Permission requested I will let know you soon")
+    update.message.reply_html("Permission requested I will let you know soon")
+
+def see_permission_req(update, context):
+    effective_user = update.effective_user
+    if effective_user.id != 403875924:
+        update.message.reply_text(text="What do you mean, I don't get it")
+        return
+    per_requests = permission_request_db.fetch().items
+    for per_request in per_requests:
+        update.message.reply_text("First Name: "+per_request["first_name"]+"\nId: "+per_request["key"]+"\nAt: "+per_request["at"])
 
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
@@ -451,6 +460,7 @@ def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('help_me', help_me))
     
     dispatcher.add_handler(CommandHandler('req_permission', request_permision))
+    dispatcher.add_handler(CommandHandler('see_permission_req', see_permission_req))
 
 def main():
     updater = Updater(TOKEN, use_context=True)
