@@ -446,7 +446,7 @@ def register_handlers(dispatcher):
 
     dispatcher.add_handler(CommandHandler('help_me', help_me))
     
-    dispatcher.add_handler(CommandHandler('req_permision', request_permision))
+    dispatcher.add_handler(CommandHandler('req_permission', request_permision))
 
 def main():
     updater = Updater(TOKEN, use_context=True)
