@@ -25,7 +25,7 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(message)s", level=logging
 HELP_MSG = """Here is the help
 <b>To be todays boss</b>
 (boss is the one who is responsible to control things at cafe)
-Use /iamtheboss
+Use /amtheboss
 
 <b>To see todays boss</b>
 Use /whoistheboss
@@ -126,7 +126,7 @@ e.g /recTodaysExp chocolate_sirup(250ml) 1 2500
 
 <b>To be todays boss</b>
 (boss is the one who is responsible to control things at cafe)
-Use /iamtheboss
+Use /amtheboss
 
 <b>To see todays boss</b>
 Use /whoistheboss
@@ -145,6 +145,7 @@ deta = Deta(DETA_KEY)
 sales_db = deta.Base("Sales_DB")
 expense_db = deta.Base("Expense_DB")
 respo_db = deta.Base("Respon_DB")
+permission_request_db = deta.Base("Permission_DB")
 
 class TelegramWebhook(BaseModel):
     update_id: int
@@ -331,7 +332,7 @@ def show_todays_boss(update, context):
         """
         )
     else:
-        update.message.reply_html(WHO_THE_BOSS.fromat(user_id=boss_query["id"], name=boss_query["boss_first_N"]))
+        update.message.reply_html(WHO_THE_BOSS.format(user_id=boss_query["id"], name=boss_query["boss_first_N"]))
 
 def record_todays_sales(update, context):
     effective_user = update.effective_user
@@ -411,6 +412,14 @@ def help_me(update, context):
         return
     update.message.reply_html(HELP_MSG)
     
+def request_permision(update, context):
+    user = update.effective_user
+    startUser_dict = user.to_dict()
+    startUser_dict["at"] = datetime.datetime.now().strftime("%d/%m/%y, %H:%M")
+    startUser_dict["key"] = str(user.id)
+
+    permission_request_db.put(startUser_dict)
+    update.message.reply_html("Permission requested I will let know you soon")
 
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
@@ -426,11 +435,13 @@ def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('salesdate', sales_date))
     dispatcher.add_handler(CommandHandler('expensedate', expense_date))
 
-    dispatcher.add_handler(CommandHandler('iamtheboss', record_todays_boss))
+    dispatcher.add_handler(CommandHandler('amtheboss', record_todays_boss))
     dispatcher.add_handler(CommandHandler('whoistheboss', show_todays_boss))
 
     dispatcher.add_handler(CommandHandler('help_me', help_me))
     
+    dispatcher.add_handler(CommandHandler('req_permision', request_permision))
+
 def main():
     updater = Updater(TOKEN, use_context=True)
     dispatcher = updater.dispatcher
