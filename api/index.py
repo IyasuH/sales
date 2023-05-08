@@ -22,31 +22,120 @@ ADMIN_IDs = [403875924]
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(message)s", level=logging.INFO)
 
+HELP_MSG = """Here is the help
+<b>To be todays boss</b>
+(boss is the one who is responsible to control things at cafe)
+Use /iamtheboss
+
+<b>To see todays boss</b>
+Use /whoistheboss
+
+<b>To record sales</b>
+Use /recordsales followed by sales info to save sales info
+
+please follow the format /recordsales sales_item sales_quantity sales_revenu sales_date(dd/mm/yyyy)
+
+e.g /recordsales chocolate_mocha 50 2000 07/05/2023
+day format DON'T FORGOT the zeros
+e.g 07/05/2023
+
+
+<b>To record expense</b>
+Use /recordexpense followed by expense info to save expense info
+
+please follow the format /recordexpense expnse_name qunatity amount expense_date(dd/mm/yyyy)
+
+e.g /recordexpense chocolate_sirup(250ml) 1 2500 07/05/2023
+day format DON'T FORGOT the zeros
+e.g 07/05/2023
+
+
+<b>To record todays sales</b>
+Use /recTodaySale followed by todays sales info - to record todays sales info
+
+please follow the format /recTodaySale sales_item sales_quantity sales_revenu
+
+e.g /recTodaySale chocolate_mocha 50 2000
+
+
+<b>To record todays expesne</b>
+Use /recTodaysExp followed by todays expense info - to record todays expense info
+
+please follow the format /recTodaysExp expnse_name qunatity amount
+
+e.g /recTodaysExp chocolate_sirup(250ml) 1 2500
+
+
+<b>To see todays sales</b>
+Use /todayssales to see todays sales
+
+<b>To see todays expense</b>
+Use /todaysexpense to see todays expense
+
+
+<b>To see sales for specific day</b>
+day format DON'T FORGOT the zeros
+e.g 07/05/2023
+Use /salesdate followed by sales date to see specfifc date sales
+
+<b>To see expense for specific day</b>
+day format DON'T FORGOT the zeros
+e.g 07/05/2023
+Use /expensedate followed by expense date to see specfifc date expense
+
+Or you can contact me at @IyasuHa
+"""
+
+
+BOSS_AUTH_MSG = """
+Well done <a href="tg://user?id={user_id}">{name}</a> 
+
+Now you are the <b>BOSS</b> keep up the sales
+
+And don't forget to record sales and expense info at the end of the day
+
+using /recTodaySale (followed by sales info) for sales
+
+/recTodaysExp (followed by expense info) for expenses
+
+/help_me for more info
+"""
+
+WHO_THE_BOSS = """
+Todays Boss is <a href="tg://user?id={user_id}">{name}</a>
+"""
+
 FIRST_MSG = """
 Hello <a href="tg://user?id={user_id}">{name}</a>
 
 <b>Welcome back</b>
+This bot is to control our sales, expense and responsible person at the cafe
 
-Use /recordsales followed by sales info to save sales info
-please follow the format /recordsales sales_item sales_quantity sales_revenu sales_date(dd/mm/yyyy)
-e.g /recordsales chocolate_mocha 50 2000 07/05/2023
+TEST VERSION
+
+<b>To record todays sales</b>
+Use /recTodaySale followed by todays sales info - to record todays sales info
+
+e.g /recTodaySale chocolate_mocha 50 2000
+
+<b>To record todays expesne</b>
+Use /recTodaysExp followed by todays expense info - to record todays expense info
+
+e.g /recTodaysExp chocolate_sirup(250ml) 1 2500
 
 
-Use /recordexpense followed by expense info to save expense info
-please follow the format /recordexpense expnse_name qunatity amount expense_date(dd/mm/yyyy)
-e.g /recordexpense chocolate_sirup(250ml) 1 2500 07/05/2023
+<b>To be todays boss</b>
+(boss is the one who is responsible to control things at cafe)
+Use /iamtheboss
 
+<b>To see todays boss</b>
+Use /whoistheboss
 
 Use /todayssales to see todays sales
 
 Use /todaysexpense to see todays expense
 
-Use /salesdate followed by sales date to see specfifc date sales
-
-Use /expensedate followed by expense date to see specfifc date expense
-
-please use the format dd/mm/Y for date
-e.g 07/05/2023
+Use /help_me to see all commands
 """
 
 app = FastAPI()
@@ -55,6 +144,7 @@ deta = Deta(DETA_KEY)
 
 sales_db = deta.Base("Sales_DB")
 expense_db = deta.Base("Expense_DB")
+respo_db = deta.Base("Respon_DB")
 
 class TelegramWebhook(BaseModel):
     update_id: int
@@ -122,7 +212,7 @@ def record_expense(update, context):
         return
     admin=effective_user
     expense_raw= str(context.args[0:])
-    #  sales_raw data to be recorder like this 
+    #  expense_raw data to be recorder like this 
     # /recordexpense expnse_name qunatity amount expense_date(dd/mm/yyyy)
     # /recordexpense chocolate_sirup(250ml) 1 2500 07/05/2023
     # expense info
@@ -174,7 +264,7 @@ def todays_expense(update, context):
         update.message.reply_text("No Expense 😌 Today")
         return
     for expense in  expenses:
-        update.messgae.reply_text("Expenses: \n\tName: "+expense["exp_name"]+"\n\tQunatity: "+str(expense["quantity"])+"\n\tAmount: "+str(expense["amount"])+"\n\tDate: "+expense["date"]+"\n\tRecorder by: "+expense["admin_first_N"]+"\n\tRecorded At: "+expense["expense_record_at"])
+        update.message.reply_text("Expenses: \n\tName: "+expense["exp_name"]+"\n\tQunatity: "+str(expense["quantity"])+"\n\tAmount: "+str(expense["amount"])+"\n\tDate: "+expense["date"]+"\n\tRecorder by: "+expense["admin_first_N"]+"\n\tRecorded At: "+expense["expense_record_at"])
 
 def sales_date(update, context):
     effective_user = update.effective_user
@@ -199,13 +289,136 @@ def expense_date(update, context):
     date = str(context.args[0:]).replace("['", '').replace("']",'').replace(" ", "")
     expenses = expense_db.fetch({"date":date}).items
     for expense in  expenses:
-        update.messgae.reply_text("Expenses: \n\tName: "+expense["exp_name"]+"\n\tQunatity: "+str(expense["quantity"])+"\n\tAmount: "+str(expense["amount"])+"\n\tDate: "+expense["date"]+"\n\tRecorder by: "+expense["admin_first_N"]+"\n\tRecorded At: "+expense["expense_record_at"])
+        update.message.reply_text("Expenses: \n\tName: "+expense["exp_name"]+"\n\tQunatity: "+str(expense["quantity"])+"\n\tAmount: "+str(expense["amount"])+"\n\tDate: "+expense["date"]+"\n\tRecorder by: "+expense["admin_first_N"]+"\n\tRecorded At: "+expense["expense_record_at"])
 
+def record_todays_boss(update, context):
+    effective_user = update.effective_user
+    if effective_user.id not in ADMIN_IDs:
+        update.message.reply_text(text="What do you mean, I don't get it")
+        return
+    # take the day as key so one day will have one boss
+    # and first check if there is any before recording
+    boss_query = respo_db.get(today)
+    if boss_query == None:
+        # No boss still now so record one
+        boss = effective_user
+        bossUserName = getattr(boss, "username", '')
+        bossFirstName = getattr(boss, "first_name", '')
+
+        boss_dict = {}
+        boss_dict["key"]= today
+        boss_dict["id"] = boss.id
+        boss_dict["boss_user_N"] = bossUserName
+        boss_dict["boss_first_N"] = bossFirstName
+        boss_dict["said_at"] = datetime.datetime.now().strftime("%d/%m/%y, %H:%M")
+
+        respo_db.put(boss_dict)
+        update.message.reply_html(BOSS_AUTH_MSG.format(user_id=boss.id, name=bossFirstName))
+    else:
+        update.message.reply_html("Possition already taken")
+        update.message.reply_html(WHO_THE_BOSS.fromat(user_id=boss_query["id"], name=boss_query["boss_first_N"]))
+
+def show_todays_boss(update, context):
+    effective_user = update.effective_user
+    if effective_user.id not in ADMIN_IDs:
+        update.message.reply_text(text="What do you mean, I don't get it")
+        return
+    # check if any boss for today and display who is he/she
+    # if not promote to record one
+    boss_query = respo_db.get(today)
+    if boss_query == None:
+        update.message.reply_html("""No one still now you can be todays boss using /iamtheboss
+        """
+        )
+    else:
+        update.message.reply_html(WHO_THE_BOSS.fromat(user_id=boss_query["id"], name=boss_query["boss_first_N"]))
+
+def record_todays_sales(update, context):
+    effective_user = update.effective_user
+    if effective_user.id not in ADMIN_IDs:
+        update.message.reply_text(text="What do you mean, I don't get it")
+        return
+    admin=effective_user
+    sales_raw = str(context.args[0:])
+    # sales INFO
+    # /recordsales sales_item sales_quantity sales_revenu
+    # /recordsales chocolate_mocha 50 2000
+
+    sales_=sales_raw.split(",")
+    sales_item = sales_[0].replace("[", '').replace("'", '')
+    sales_quantity = sales_[1].replace("'", '')
+    sales_revenu = sales_[2].replace("]", '').replace("'", '').replace(" ", "")
+    sales_date = today
+
+    # admin info
+    adminUserName = getattr(admin, "username", '')
+    adminFirstName = getattr(admin, "first_name", '')
+    adminRecordAt = datetime.datetime.now()
+
+    sales_dict = {}
+    sales_dict["item_name"]=sales_item
+    sales_dict["quantity"]=sales_quantity
+    sales_dict["revenu"]=sales_revenu
+    sales_dict["date"]=sales_date
+
+    sales_dict["admin_user_N"]=adminUserName
+    sales_dict["admin_first_N"]=adminFirstName
+    sales_dict["sales_record_at"]=adminRecordAt.strftime("%d/%m/%y, %H:%M")
+
+    sales_db.put(sales_dict)
+    update.message.reply_html("<b>Todays Sales</b> info recorded successfully")
+
+
+def record_todays_expesne(update, context):
+    effective_user = update.effective_user
+    if effective_user.id not in ADMIN_IDs:
+        update.message.reply_text(text="What do you mean, I don't get it")
+        return
+    admin=effective_user
+    expense_raw= str(context.args[0:])
+    # expense INFO
+    # /recordexpense expnse_name qunatity amount
+    # /recordexpense chocolate_sirup(250ml) 1 2500
+
+    expense_=expense_raw.split(",")
+    expense_name = expense_[0].replace("[", '').replace("'", '')
+    expense_qunatity = expense_[1].replace("'", '')
+    expense_amount = expense_[2].replace("]", '').replace("'", '').replace(" ", "")
+    expense_date = today
+
+    # admin info
+    adminUserName = getattr(admin, "username", '')
+    adminFirstName = getattr(admin, "first_name", '')
+    adminRecordAt = datetime.datetime.now()
+
+    expense_dict = {}
+    expense_dict["exp_name"]=expense_name
+    expense_dict["quantity"]=expense_qunatity
+    expense_dict["amount"]=expense_amount
+    expense_dict["date"]=expense_date
+
+    expense_dict["admin_user_N"]=adminUserName
+    expense_dict["admin_first_N"]=adminFirstName
+    expense_dict["expense_record_at"]=adminRecordAt.strftime("%d/%m/%y, %H:%M")
+
+    expense_db.put(expense_dict)
+    update.message.reply_html("<b>expense</b> info recorded successfully")
+    
+def help_me(update, context):
+    effective_user = update.effective_user
+    if effective_user.id not in ADMIN_IDs:
+        update.message.reply_text(text="What do you mean, I don't get it")
+        return
+    update.message.reply_html(HELP_MSG)
+    
 
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(CommandHandler('recordsales', record_sales))
     dispatcher.add_handler(CommandHandler('recordexpense', record_expense))
+
+    dispatcher.add_handler(CommandHandler('recTodaySale', record_todays_sales))
+    dispatcher.add_handler(CommandHandler('recTodaysExp', record_todays_expesne))
 
     dispatcher.add_handler(CommandHandler('todayssales', todays_sales))
     dispatcher.add_handler(CommandHandler('todaysexpense', todays_expense))
@@ -213,6 +426,11 @@ def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('salesdate', sales_date))
     dispatcher.add_handler(CommandHandler('expensedate', expense_date))
 
+    dispatcher.add_handler(CommandHandler('iamtheboss', record_todays_boss))
+    dispatcher.add_handler(CommandHandler('whoistheboss', show_todays_boss))
+
+    dispatcher.add_handler(CommandHandler('help_me', help_me))
+    
 def main():
     updater = Updater(TOKEN, use_context=True)
     dispatcher = updater.dispatcher
