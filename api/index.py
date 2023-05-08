@@ -36,6 +36,7 @@ Use /recordsales followed by sales info to save sales info
 please follow the format /recordsales sales_item sales_quantity sales_revenu sales_date(dd/mm/yyyy)
 
 e.g /recordsales chocolate_mocha 50 2000 07/05/2023
+
 day format DON'T FORGOT the zeros
 e.g 07/05/2023
 
@@ -46,6 +47,7 @@ Use /recordexpense followed by expense info to save expense info
 please follow the format /recordexpense expnse_name qunatity amount expense_date(dd/mm/yyyy)
 
 e.g /recordexpense chocolate_sirup(250ml) 1 2500 07/05/2023
+
 day format DON'T FORGOT the zeros
 e.g 07/05/2023
 
@@ -74,13 +76,17 @@ Use /todaysexpense to see todays expense
 
 
 <b>To see sales for specific day</b>
+
 day format DON'T FORGOT the zeros
 e.g 07/05/2023
+
 Use /salesdate followed by sales date to see specfifc date sales
 
 <b>To see expense for specific day</b>
+
 day format DON'T FORGOT the zeros
 e.g 07/05/2023
+
 Use /expensedate followed by expense date to see specfifc date expense
 
 Or you can contact me at @IyasuHa
