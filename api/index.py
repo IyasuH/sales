@@ -94,7 +94,7 @@ def record_sales(update, context):
     sales_item = sales_[0].replace("[", '').replace("'", '')
     sales_quantity = sales_[1].replace("'", '')
     sales_revenu = sales_[2].replace("'", '')
-    sales_date = sales_[3].replace("]", '').replace("'", '')
+    sales_date = sales_[3].replace("]", '').replace("'", '').replace(" ", "")
 
     # admin info
     adminUserName = getattr(admin, "username", '')
@@ -130,7 +130,7 @@ def record_expense(update, context):
     expense_name = expense_[0].replace("[", '').replace("'", '')
     expense_qunatity = expense_[1].replace("'", '')
     expense_amount = expense_[2].replace("'", '')
-    expense_date = expense_[3].replace("]", '').replace("'", '')
+    expense_date = expense_[3].replace("]", '').replace("'", '').replace(" ", "")
 
     # admin info
     adminUserName = getattr(admin, "username", '')
@@ -150,7 +150,7 @@ def record_expense(update, context):
     expense_db.put(expense_dict)
     update.message.reply_html("<b>expense</b> info recorded successfully")
 
-today = datetime.datetime.now().strftime(" %d/%m/%Y")
+today = datetime.datetime.now().strftime("%d/%m/%Y")
 
 def todays_sales(update, context):
     effective_user = update.effective_user
@@ -162,7 +162,7 @@ def todays_sales(update, context):
         update.message.reply_text("No Sales 😞 Today")
         return
     for sale in sales:
-        update.message.reply_text("Sales: \n\tItem Name: "+sale["item_name"]+"\n\tQunatity: "+str(sale["quantity"])+"\n\tRevenu: "+str(sale["revenu"])+"\n\tDate: "+sale["date"]+"\n\tRecorder by: "+sale["admin_first_N"]+"\n\tRecorded At: "+sale["admin_record_at"])
+        update.message.reply_text("Sales: \n\tItem Name: "+sale["item_name"]+"\n\tQunatity: "+str(sale["quantity"])+"\n\tRevenu: "+str(sale["revenu"])+"\n\tDate: "+sale["date"]+"\n\tRecorder by: "+sale["admin_first_N"]+"\n\tRecorded At: "+sale["sales_record_at"])
 
 def todays_expense(update, context):
     effective_user = update.effective_user
@@ -174,7 +174,7 @@ def todays_expense(update, context):
         update.message.reply_text("No Expense 😌 Today")
         return
     for expense in  expenses:
-        update.messgae.reply_text("Expenses: \n\tName: "+expense["exp_name"]+"\n\tQunatity: "+str(expense["quantity"])+"\n\tAmount: "+str(expense["amount"])+"\n\tDate: "+expense["date"]+"\n\tRecorder by: "+expense["admin_first_N"]+"\n\tRecorded At: "+expense["admin_record_at"])
+        update.messgae.reply_text("Expenses: \n\tName: "+expense["exp_name"]+"\n\tQunatity: "+str(expense["quantity"])+"\n\tAmount: "+str(expense["amount"])+"\n\tDate: "+expense["date"]+"\n\tRecorder by: "+expense["admin_first_N"]+"\n\tRecorded At: "+expense["expense_record_at"])
 
 def sales_date(update, context):
     effective_user = update.effective_user
@@ -182,13 +182,13 @@ def sales_date(update, context):
         update.message.reply_text(text="What do you mean, I don't get it")
         return
     # the date format should be 07/05/2023
-    date = str(context.args[0:]).replace("['", '').replace("']",'')
+    date = str(context.args[0:]).replace("['", '').replace("']",'').replace(" ", "")
     sales = sales_db.fetch({"date":date}).items
     if sales == []:
         update.message.reply_text("No sales at that day")
         return
     for sale in sales:
-        update.message.reply_text("Sales: \n\tItem Name: "+sale["item_name"]+"\n\tQunatity: "+str(sale["quantity"])+"\n\tRevenu: "+str(sale["revenu"])+"\n\tDate: "+sale["date"]+"\n\tRecorder by: "+sale["admin_first_N"]+"\n\tRecorded At: "+sale["admin_record_at"])
+        update.message.reply_text("Sales: \n\tItem Name: "+sale["item_name"]+"\n\tQunatity: "+str(sale["quantity"])+"\n\tRevenu: "+str(sale["revenu"])+"\n\tDate: "+sale["date"]+"\n\tRecorder by: "+sale["admin_first_N"]+"\n\tRecorded At: "+sale["sales_record_at"])
 
 def expense_date(update, context):
     effective_user = update.effective_user
@@ -196,10 +196,10 @@ def expense_date(update, context):
         update.message.reply_text(text="What do you mean, I don't get it")
         return
     # the date format should be 07/05/2023
-    date = str(context.args[0:]).replace("['", '').replace("']",'')
+    date = str(context.args[0:]).replace("['", '').replace("']",'').replace(" ", "")
     expenses = expense_db.fetch({"date":date}).items
     for expense in  expenses:
-        update.messgae.reply_text("Expenses: \n\tName: "+expense["exp_name"]+"\n\tQunatity: "+str(expense["quantity"])+"\n\tAmount: "+str(expense["amount"])+"\n\tDate: "+expense["date"]+"\n\tRecorder by: "+expense["admin_first_N"]+"\n\tRecorded At: "+expense["admin_record_at"])
+        update.messgae.reply_text("Expenses: \n\tName: "+expense["exp_name"]+"\n\tQunatity: "+str(expense["quantity"])+"\n\tAmount: "+str(expense["amount"])+"\n\tDate: "+expense["date"]+"\n\tRecorder by: "+expense["admin_first_N"]+"\n\tRecorded At: "+expense["expense_record_at"])
 
 
 def register_handlers(dispatcher):
