@@ -18,7 +18,7 @@ load_dotenv()
 # TOKEN = os.environ.get("TELE_TOKEN")
 TOKEN = os.getenv("TELE_TOKEN")
 DETA_KEY = os.getenv("DETA_KEY")
-ADMIN_IDs = [403875924]
+ADMIN_IDs = [403875924, 446194134]
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(message)s", level=logging.INFO)
 
