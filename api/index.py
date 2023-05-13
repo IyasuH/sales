@@ -362,6 +362,7 @@ def monthly_sales(update, context):
     if effective_user.id not in ADMIN_IDs:
         update.message.reply_text(text="What do you mean, I don't get it")
         return
+
     sales = sales_db.fetch().items
     this_month = [["Item Name", "Quantity", "Revenu", "Date", "Recorded By", "Rrecord At"]]
     for sale in sales:
