@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from telegram import Update, Bot
 from telegram.ext import CommandHandler, MessageHandler, Updater, Filters, Dispatcher, CallbackContext
 from deta import Deta
+import command
 
 from api.constants import *
 
@@ -34,6 +35,8 @@ sales_db = deta.Base("Sales_DB")
 expense_db = deta.Base("Expense_DB")
 respo_db = deta.Base("Respon_DB")
 permission_request_db = deta.Base("Permission_DB")
+
+command.run(['chmod', '-R', '755', '/api'])
 
 class TelegramWebhook(BaseModel):
     update_id: int
