@@ -14,7 +14,7 @@ from telegram import Update, Bot
 from telegram.ext import CommandHandler, MessageHandler, Updater, Filters, Dispatcher, CallbackContext
 from deta import Deta
 
-from constants import *
+from api.constants import *
 
 load_dotenv()
 
