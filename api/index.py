@@ -367,7 +367,7 @@ def monthly_sales(update, context):
     this_month = [["Item Name", "Quantity", "Revenu", "Date", "Recorded By", "Rrecord At"]]
     for sale in sales:
         if sale['date'][3:] == today[3:]:
-            this_month.append([sale('item_name'), sale('quantity'), sale('revenu'), sale('date'), sale('admin_first_N'), sale('sales_record_at')])
+            this_month.append([sale['item_name'], sale['quantity'], sale['revenu'], sale['date'], sale['admin_first_N'], sale['sales_record_at']])
     with open('This_month_sales.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(this_month)
