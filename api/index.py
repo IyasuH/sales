@@ -36,7 +36,7 @@ expense_db = deta.Base("Expense_DB")
 respo_db = deta.Base("Respon_DB")
 permission_request_db = deta.Base("Permission_DB")
 
-command.run(['chmod', '-R', '755', '/api'])
+# command.run(['chmod', '-R', '755', '/api'])
 
 class TelegramWebhook(BaseModel):
     update_id: int
