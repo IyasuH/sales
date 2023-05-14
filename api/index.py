@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from telegram import Update, Bot
 from telegram.ext import CommandHandler, MessageHandler, Updater, Filters, Dispatcher, CallbackContext
 from deta import Deta
-import command
+# import command
 
 from api.constants import *
 
