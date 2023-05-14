@@ -377,7 +377,7 @@ def monthly_sales(update, context):
     for sale in sales:
         if sale['date'][3:] == today[3:]:
             this_month.append([sale['item_name'], sale['quantity'], sale['revenu'], sale['date'], sale['admin_first_N'], sale['sales_record_at']])
-    with open('/tmp/$This_month_sales.csv', 'w', newline='') as file:
+    with open('/tmp/This_month_sales.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(this_month)
         # writer.writerow(["Item Name", "Quantity", "Revenu", "Date", "Recorded By", "Rrecord At"])
@@ -385,7 +385,7 @@ def monthly_sales(update, context):
         #     if sale['date'][3:] == today[3:]:
         #         writer.writerow([sale('item_name'), sale('quantity'), sale('revenu'), sale('date'), sale('admin_first_N'), sale('sales_record_at')])
     chat_id = update.message.chat_id
-    document = open('/tmp/$This_month_sales.csv', 'rb')
+    document = open('/tmp/This_month_sales.csv', 'rb')
     context.bot.send_document(chat_id, document)
 
 def monthly_expense(update, context):
@@ -411,7 +411,7 @@ def monthly_comments(update, context):
     update.message.reply_html("<b>This Month Comments Are: </b>")
     count=1
     for comment in comments:
-        if comment["date"][3:8] == thisMonth:
+        if comment["dateTime"][3:8] == thisMonth:
             update.message.reply_text(str(count)+".\nBody: "+comment["comment"]+"\nBy: "+comment["firstName"]+"\nAt: "+comment["dateTime"])
             count+=1
 
