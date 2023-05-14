@@ -111,5 +111,11 @@ Use /todayssales to see todays sales
 
 Use /todaysexpense to see todays expense
 
+Use /monthly_sales to get this month sales report
+
+Use /monthly_expense to get this month expenses report
+
+Use /monthly_comments to get this month comments
+
 Use /help_me to see all commands
 """

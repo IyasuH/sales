@@ -380,16 +380,13 @@ def monthly_sales(update, context):
         sales += res_sales.items
 
     this_month = [["Item Name", "Quantity", "Revenu", "Date", "Recorded By", "Rrecorded At"]]
+    update.message.reply_html("<b>This Month Sales Are: </b>")
     for sale in sales:
         if sale['date'][3:] == today[3:]:
             this_month.append([sale['item_name'], sale['quantity'], sale['revenu'], sale['date'], sale['admin_first_N'], sale['sales_record_at']])
     with open('/tmp/This_month_sales.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(this_month)
-        # writer.writerow(["Item Name", "Quantity", "Revenu", "Date", "Recorded By", "Rrecord At"])
-        # for sale in sales:
-        #     if sale['date'][3:] == today[3:]:
-        #         writer.writerow([sale('item_name'), sale('quantity'), sale('revenu'), sale('date'), sale('admin_first_N'), sale('sales_record_at')])
     chat_id = update.message.chat_id
     document = open('/tmp/This_month_sales.csv', 'rb')
     context.bot.send_document(chat_id, document)
@@ -411,9 +408,10 @@ def monthly_expense(update, context):
         expenses += res_expenses.items
 
     this_month = [["Expense Name", "Quantity", "Amount", "Date", "Recorded By", "Recorded At"]]
+    update.message.reply_html("<b>This Month Expenes Are: </b>")
     for expense in expenses:
         if expense['date'][3:] == today[3:]:
-            this_month.append(expense["exp_name"], expense["quantity"], expense["amount"], expense["date"], expense["admin_first_N"], expense["expense_record_at"])
+            this_month.append([expense["exp_name"], expense["quantity"], expense["amount"], expense["date"], expense["admin_first_N"], expense["expense_record_at"]])
     with open('/tmp/This_month_expenses.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(this_month)
