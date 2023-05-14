@@ -365,15 +365,21 @@ def see_permission_req(update, context):
 
 def monthly_sales(update, context):
     """
-    to generate CSV or XL file that contains sales info for this month
+    to generate CSV file that contains sales info for this month and send that
     """
     effective_user = update.effective_user
     if effective_user.id not in ADMIN_IDs:
         update.message.reply_text(text="What do you mean, I don't get it")
         return
+    
+    # load all sales info
+    res_sales = sales_db.fetch()
+    sales = res_sales.items
+    while res_sales.last:
+        res_sales = sales_db.fetch(last=res_sales.last)
+        sales += res_sales.items
 
-    sales = sales_db.fetch().items
-    this_month = [["Item Name", "Quantity", "Revenu", "Date", "Recorded By", "Rrecord At"]]
+    this_month = [["Item Name", "Quantity", "Revenu", "Date", "Recorded By", "Rrecorded At"]]
     for sale in sales:
         if sale['date'][3:] == today[3:]:
             this_month.append([sale['item_name'], sale['quantity'], sale['revenu'], sale['date'], sale['admin_first_N'], sale['sales_record_at']])
@@ -396,7 +402,26 @@ def monthly_expense(update, context):
     if effective_user.id not in ADMIN_IDs:
         update.message.reply_text(text="What do you mean, I don't get it")
         return
-    pass
+    
+    # load all expense info
+    res_expenses = expense_db.fetch()
+    expenses = res_expenses.items
+    while res_expenses.last:
+        res_expenses = expense_db.fetch(last=res_expenses.last)
+        expenses += res_expenses.items
+
+    this_month = [["Expense Name", "Quantity", "Amount", "Date", "Recorded By", "Recorded At"]]
+    for expense in expenses:
+        if expense['date'][3:] == today[3:]:
+            this_month.append(expense["exp_name"], expense["quantity"], expense["amount"], expense["date"], expense["admin_first_N"], expense["expense_record_at"])
+    with open('/tmp/This_month_expenses.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(this_month)
+
+    chat_id = update.message.chat_id
+    document = open('/tmp/This_month_expenses.csv', 'rb')
+    context.bot.send_document(chat_id, document)
+    
 
 def monthly_comments(update, context):
     """
@@ -406,14 +431,31 @@ def monthly_comments(update, context):
     if effective_user.id not in ADMIN_IDs:
         update.message.reply_text(text="What do you mean, I don't get it")
         return
-    comments = comments_db.fetch().items
+
+    # load all comments
+    res = comments_db.fetch()
+    all_comments = res.items
+    while res.last:
+        res = comments_db.fetch(last=res.last)
+        all_comments += res.items
+
     thisMonth = datetime.datetime.now().strftime("%m/%y")
     update.message.reply_html("<b>This Month Comments Are: </b>")
-    count=1
-    for comment in comments:
+    # count=1
+    this_month = [["Comment", "By", "Comment At"]]
+    for comment in all_comments:
         if comment["dateTime"][3:8] == thisMonth:
-            update.message.reply_text(str(count)+".\nBody: "+comment["comment"]+"\nBy: "+comment["firstName"]+"\nAt: "+comment["dateTime"])
-            count+=1
+            this_month.append([comment["comment"], comment["firstName"], comment["dateTime"]])
+            # update.message.reply_text(str(count)+".\nBody: "+comment["comment"]+"\nBy: "+comment["firstName"]+"\nAt: "+comment["dateTime"])
+            # count+=1
+    with open('/tmp/This_month_comments.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(this_month)
+
+    chat_id = update.message.chat_id
+    document = open('/tmp/This_month_comments.csv', 'rb')
+    context.bot.send_document(chat_id, document)
+
 
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
