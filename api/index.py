@@ -22,19 +22,25 @@ load_dotenv()
 # TOKEN = os.environ.get("TELE_TOKEN")
 TOKEN = os.getenv("TELE_TOKEN")
 DETA_KEY = os.getenv("DETA_KEY")
+CUSTOMER_DETA_KEY = os.getenv("CUSTOMER_DETA_KEY")
+
 ADMIN_IDs = [403875924, 446194134, 972958641, 331259874]
 
 logging.basicConfig(format="%(asctime)s - %(name)s - %(message)s", level=logging.INFO)
-
 
 app = FastAPI()
 
 deta = Deta(DETA_KEY)
 
+customer_deta = Deta(CUSTOMER_DETA_KEY)
+
 sales_db = deta.Base("Sales_DB")
 expense_db = deta.Base("Expense_DB")
 respo_db = deta.Base("Respon_DB")
 permission_request_db = deta.Base("Permission_DB")
+invetory_db = deta.Base("Invetory_DB")
+
+comments_db = customer_deta.Base("Comments_DB")
 
 # command.run(['chmod', '-R', '755', '/api'])
 
@@ -371,7 +377,7 @@ def monthly_sales(update, context):
     for sale in sales:
         if sale['date'][3:] == today[3:]:
             this_month.append([sale['item_name'], sale['quantity'], sale['revenu'], sale['date'], sale['admin_first_N'], sale['sales_record_at']])
-    with open('This_month_sales.csv', 'w', newline='') as file:
+    with open('/tmp/$This_month_sales.csv', 'w', newline='') as file:
         writer = csv.writer(file)
         writer.writerows(this_month)
         # writer.writerow(["Item Name", "Quantity", "Revenu", "Date", "Recorded By", "Rrecord At"])
@@ -379,7 +385,7 @@ def monthly_sales(update, context):
         #     if sale['date'][3:] == today[3:]:
         #         writer.writerow([sale('item_name'), sale('quantity'), sale('revenu'), sale('date'), sale('admin_first_N'), sale('sales_record_at')])
     chat_id = update.message.chat_id
-    document = open('This_month_sales.csv', 'rb')
+    document = open('/tmp/$This_month_sales.csv', 'rb')
     context.bot.send_document(chat_id, document)
 
 def monthly_expense(update, context):
@@ -391,6 +397,23 @@ def monthly_expense(update, context):
         update.message.reply_text(text="What do you mean, I don't get it")
         return
     pass
+
+def monthly_comments(update, context):
+    """
+    to see this month comments
+    """
+    effective_user = update.effective_user
+    if effective_user.id not in ADMIN_IDs:
+        update.message.reply_text(text="What do you mean, I don't get it")
+        return
+    comments = comments_db.fetch().items
+    thisMonth = datetime.datetime.now().strftime("%m/%y")
+    update.message.reply_html("<b>This Month Comments Are: </b>")
+    count=1
+    for comment in comments:
+        if comment["date"][3:8] == thisMonth:
+            update.message.reply_text(str(count)+".\nBody: "+comment["comment"]+"\nBy: "+comment["firstName"]+"\nAt: "+comment["dateTime"])
+            count+=1
 
 def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('start', start))
@@ -417,6 +440,7 @@ def register_handlers(dispatcher):
     dispatcher.add_handler(CommandHandler('monthly_sales', monthly_sales))
     dispatcher.add_handler(CommandHandler('monthly_expense', monthly_expense))
 
+    dispatcher.add_handler(CommandHandler('monthly_comments', monthly_comments))    
 
 def main():
     updater = Updater(TOKEN, use_context=True)
